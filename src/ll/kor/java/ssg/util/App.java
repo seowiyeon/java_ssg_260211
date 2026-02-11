@@ -1,5 +1,7 @@
 package ll.kor.java.ssg;
 
+import ll.kor.java.ssg.controller.ArticleController;
+import ll.kor.java.ssg.controller.MemberController;
 import ll.kor.java.ssg.dto.Article;
 import ll.kor.java.ssg.dto.Member;
 import ll.kor.java.ssg.util.Util;
@@ -10,11 +12,9 @@ import java.util.Scanner;
 
 public class App {
     List<Article> articles;
-    List<Member> members;
 
     public App() {
         articles = new ArrayList<>();
-        members = new ArrayList<>();
     }
 
     void start() {
@@ -23,6 +23,9 @@ public class App {
         makeTestData();
 
         Scanner sc = new Scanner(System.in);
+
+        MemberController memberController = new MemberController(sc);
+        ArticleController articleController = new ArticleController();
 
         while (true) {
             IO.print("명령어) ");
@@ -33,48 +36,9 @@ public class App {
             if (cmd.equals("exit")) break;
 
             // member 시작
-            if (cmd.equals("member join")) {
-                int id = members.size() + 1;
-                String regDate = Util.getNowDateStr();
+            if (cmd.equals("member join")) memberController.doJoin();
 
-                String loginId = null;
-
-                while ( true ) {
-                    IO.print("로그인 아이디 : ");
-                    loginId = sc.nextLine();
-
-                    if ( isJoinableLoginId(loginId) == false ) {
-                        IO.println(String.format("%s(은)는 이미 사용중인 아이디 입니다.", loginId));
-                        continue;
-                    }
-
-                    break;
-                }
-
-                String loginPw = null;
-
-                while (true ) {
-                    IO.print("로그인 비번 : ");
-                    loginPw = sc.nextLine();
-                    IO.print("로그인 비번확인 : ");
-                    String loginPwConfirm = sc.nextLine();
-
-                    // if ( loginPw.equals(loginPwConfirm) == false ) {
-                    if ( !loginPw.equals(loginPwConfirm) ) {
-                        IO.println("비밀번호를 다시 입력해주세요.");
-                        continue;
-                    }
-
-                    break;
-                }
-
-                Member member = new Member(id, regDate, loginId, loginPw);
-                members.add(member);
-
-                IO.println(String.format("%s님 회원가입이 완료되었습니다.", loginId));
-            }
-
-            // Article 시작
+                // Article 시작
             else if (cmd.equals("article write")) {
                 int id = articles.size() + 1;
                 String regDate = Util.getNowDateStr();
@@ -97,16 +61,16 @@ public class App {
                 List<Article> forListArticles = articles;
 
 //                if ( searchKeyword.length() > 0 ) {
-                if ( !searchKeyword.isEmpty() ) {
-                    forListArticles =  new ArrayList<>();
+                if (!searchKeyword.isEmpty()) {
+                    forListArticles = new ArrayList<>();
 
-                    for ( Article article : articles ) {
-                        if ( article.subject.contains(searchKeyword) ) {
+                    for (Article article : articles) {
+                        if (article.subject.contains(searchKeyword)) {
                             forListArticles.add(article);
                         }
                     }
 
-                    if ( forListArticles.isEmpty() ) {
+                    if (forListArticles.isEmpty()) {
                         IO.println("검색 결과가 존재하지 않습니다.");
                         continue;
                     }
@@ -179,29 +143,6 @@ public class App {
         sc.close();
     }
 
-    private int getMemberIndexByLoginId(String loginId) {
-        int i = 0;
-
-        for ( Member member: members ) {
-            if (member.loginId.equals(loginId)) {
-                return i;
-            }
-            i++;
-        }
-
-        return -1;
-    }
-
-    private boolean isJoinableLoginId(String loginId) {
-        int index = getMemberIndexByLoginId(loginId);
-
-        if ( index == -1 ) {
-            return true;
-        }
-
-        return false;
-    }
-
     private int getArticleIndexById(int id) {
         int i = 0;
         for (Article article : articles) {
@@ -217,7 +158,7 @@ public class App {
     private Article getArticleById(int id) {
         int index = getArticleIndexById(id);
 
-        if ( index != -1 ) {
+        if (index != -1) {
             return articles.get(index);
         }
 
