@@ -1,30 +1,37 @@
+package ll.kor.java.ssg;
+
+import ll.kor.java.ssg.dto.Article;
+import ll.kor.java.ssg.util.Util;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
-    private static List<Article> articles;
+public class App {
+    List<Article> articles;
 
-    static {
+    public App() {
         articles = new ArrayList<>();
     }
 
-    public static void main() {
+    void start() {
         IO.println("== 프로그램 시작 ==");
+
         makeTestData();
+
         Scanner sc = new Scanner(System.in);
 
         int lastArticleId = 3;
 
-        while ( true ) {
+        while (true) {
             IO.print("명령어) ");
             String cmd = sc.nextLine();
             cmd = cmd.trim(); // 앞뒤에 쓸데없는 공백을 제거
 
-            if ( cmd.isEmpty() ) continue;
-            if ( cmd.equals("exit") ) break;
+            if (cmd.isEmpty()) continue;
+            if (cmd.equals("exit")) break;
 
-            if ( cmd.equals("article write") ) {
+            if (cmd.equals("article write")) {
                 int id = lastArticleId + 1;
                 String regDate = Util.getNowDateStr();
                 IO.print("제목 : ");
@@ -38,19 +45,19 @@ public class Main {
                 lastArticleId = id;
 
                 IO.println(String.format("%d번 글이 생성되었습니다.", id));
-            } else if ( cmd.equals("article list") ) {
-                if ( articles.isEmpty() ) {
+            } else if (cmd.equals("article list")) {
+                if (articles.isEmpty()) {
                     IO.println("게시물이 없습니다.");
                     continue;
                 }
 
                 IO.println("번호 | 조회 | 제목");
-                for ( int i = articles.size() - 1; i >= 0; i-- ) {
+                for (int i = articles.size() - 1; i >= 0; i--) {
                     Article article = articles.get(i);
 
-                    IO.println(String.format("%d   | %d   | %s", article.id,article.hit, article.subject));
+                    IO.println(String.format("%d   | %d   | %s", article.id, article.hit, article.subject));
                 }
-            } else if ( cmd.startsWith("article detail ") ) {
+            } else if (cmd.startsWith("article detail ")) {
                 String[] cmdBits = cmd.split(" ");
                 int id = Integer.parseInt(cmdBits[2]);
 
@@ -63,7 +70,7 @@ public class Main {
                     }
                 }
 
-                if ( foundArticle == null ) {
+                if (foundArticle == null) {
                     IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
                     continue;
                 }
@@ -76,13 +83,13 @@ public class Main {
                 IO.println(String.format("내용 : %s", foundArticle.content));
                 IO.println(String.format("조회 : %d", foundArticle.hit));
 
-            } else if ( cmd.startsWith("article delete ") ) {
+            } else if (cmd.startsWith("article delete ")) {
                 String[] cmdBits = cmd.split(" ");
                 int id = Integer.parseInt(cmdBits[2]);
 
                 int foundIndex = -1;
 
-                for (int i = 0; i < articles.size(); i++ ) {
+                for (int i = 0; i < articles.size(); i++) {
                     Article article = articles.get(i);
 
                     if (article.id == id) {
@@ -91,7 +98,7 @@ public class Main {
                     }
                 }
 
-                if ( foundIndex == -1 ) {
+                if (foundIndex == -1) {
                     IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
                     continue;
                 }
@@ -99,8 +106,7 @@ public class Main {
                 articles.remove(foundIndex);
 
                 IO.println(String.format("%d번 게시물이 삭제되었습니다.", id));
-            }
-            else if ( cmd.startsWith("article modify ") ) {
+            } else if (cmd.startsWith("article modify ")) {
                 String[] cmdBits = cmd.split(" ");
                 int id = Integer.parseInt(cmdBits[2]);
 
@@ -113,7 +119,7 @@ public class Main {
                     }
                 }
 
-                if ( foundArticle == null ) {
+                if (foundArticle == null) {
                     IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
                     continue;
                 }
@@ -128,16 +134,14 @@ public class Main {
                 foundArticle.content = content;
 
                 IO.println(String.format("%d번 게시물이 수정되었습니다.", id));
-            }
-
-            else IO.println("존재하지 않는 명령어입니다.");
+            } else IO.println("존재하지 않는 명령어입니다.");
         }
 
         IO.println("== 프로그램 끝 ==");
         sc.close();
     }
 
-    private static void makeTestData() {
+    private void makeTestData() {
         IO.println("테스트를 위한 데이터를 생성합니다.");
 
         articles.add(new Article(1, Util.getNowDateStr(), "제목 1", "내용 1", 10));
