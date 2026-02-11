@@ -1,6 +1,7 @@
 package ll.kor.java.ssg;
 
 import ll.kor.java.ssg.dto.Article;
+import ll.kor.java.ssg.dto.Member;
 import ll.kor.java.ssg.util.Util;
 
 import java.util.ArrayList;
@@ -9,9 +10,11 @@ import java.util.Scanner;
 
 public class App {
     List<Article> articles;
+    List<Member> members;
 
     public App() {
         articles = new ArrayList<>();
+        members = new ArrayList<>();
     }
 
     void start() {
@@ -21,8 +24,6 @@ public class App {
 
         Scanner sc = new Scanner(System.in);
 
-        int lastArticleId = 3;
-
         while (true) {
             IO.print("명령어) ");
             String cmd = sc.nextLine();
@@ -31,8 +32,51 @@ public class App {
             if (cmd.isEmpty()) continue;
             if (cmd.equals("exit")) break;
 
-            if (cmd.equals("article write")) {
-                int id = lastArticleId + 1;
+            // member 시작
+            if (cmd.equals("member join")) {
+                int id = members.size() + 1;
+                String regDate = Util.getNowDateStr();
+
+                String loginId = null;
+
+                while ( true ) {
+                    IO.print("로그인 아이디 : ");
+                    loginId = sc.nextLine();
+
+                    if ( isJoinableLoginId(loginId) == false ) {
+                        IO.println(String.format("%s(은)는 이미 사용중인 아이디 입니다.", loginId));
+                        continue;
+                    }
+
+                    break;
+                }
+
+                String loginPw = null;
+
+                while (true ) {
+                    IO.print("로그인 비번 : ");
+                    loginPw = sc.nextLine();
+                    IO.print("로그인 비번확인 : ");
+                    String loginPwConfirm = sc.nextLine();
+
+                    // if ( loginPw.equals(loginPwConfirm) == false ) {
+                    if ( !loginPw.equals(loginPwConfirm) ) {
+                        IO.println("비밀번호를 다시 입력해주세요.");
+                        continue;
+                    }
+
+                    break;
+                }
+
+                Member member = new Member(id, regDate, loginId, loginPw);
+                members.add(member);
+
+                IO.println(String.format("%s님 회원가입이 완료되었습니다.", loginId));
+            }
+
+            // Article 시작
+            else if (cmd.equals("article write")) {
+                int id = articles.size() + 1;
                 String regDate = Util.getNowDateStr();
                 IO.print("제목 : ");
                 String subject = sc.nextLine();
@@ -41,8 +85,6 @@ public class App {
 
                 Article article = new Article(id, regDate, subject, content);
                 articles.add(article);
-
-                lastArticleId = id;
 
                 IO.println(String.format("%d번 글이 생성되었습니다.", id));
             } else if (cmd.startsWith("article list")) {
@@ -135,6 +177,29 @@ public class App {
 
         IO.println("== 프로그램 끝 ==");
         sc.close();
+    }
+
+    private int getMemberIndexByLoginId(String loginId) {
+        int i = 0;
+
+        for ( Member member: members ) {
+            if (member.loginId.equals(loginId)) {
+                return i;
+            }
+            i++;
+        }
+
+        return -1;
+    }
+
+    private boolean isJoinableLoginId(String loginId) {
+        int index = getMemberIndexByLoginId(loginId);
+
+        if ( index == -1 ) {
+            return true;
+        }
+
+        return false;
     }
 
     private int getArticleIndexById(int id) {

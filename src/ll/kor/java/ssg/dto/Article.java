@@ -1,6 +1,6 @@
 package ll.kor.java.ssg.dto;
 
-public class Article {
+public class Article extends Dto {
     public int id;
     public String regDate;
     public String subject;
