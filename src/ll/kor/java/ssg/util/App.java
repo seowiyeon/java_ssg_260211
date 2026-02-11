@@ -45,15 +45,34 @@ public class App {
                 lastArticleId = id;
 
                 IO.println(String.format("%d번 글이 생성되었습니다.", id));
-            } else if (cmd.equals("article list")) {
+            } else if (cmd.startsWith("article list")) {
                 if (articles.isEmpty()) {
                     IO.println("게시물이 없습니다.");
                     continue;
                 }
 
+                String searchKeyword = cmd.substring("article list".length()).trim();
+                List<Article> forListArticles = articles;
+
+//                if ( searchKeyword.length() > 0 ) {
+                if ( !searchKeyword.isEmpty() ) {
+                    forListArticles =  new ArrayList<>();
+
+                    for ( Article article : articles ) {
+                        if ( article.subject.contains(searchKeyword) ) {
+                            forListArticles.add(article);
+                        }
+                    }
+
+                    if ( forListArticles.isEmpty() ) {
+                        IO.println("검색 결과가 존재하지 않습니다.");
+                        continue;
+                    }
+                }
+
                 IO.println("번호 | 조회 | 제목");
-                for (int i = articles.size() - 1; i >= 0; i--) {
-                    Article article = articles.get(i);
+                for (int i = forListArticles.size() - 1; i >= 0; i--) {
+                    Article article = forListArticles.get(i);
 
                     IO.println(String.format("%d   | %d   | %s", article.id, article.hit, article.subject));
                 }
