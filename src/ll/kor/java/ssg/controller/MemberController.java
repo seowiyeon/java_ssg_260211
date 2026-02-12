@@ -1,5 +1,6 @@
 package ll.kor.java.ssg.controller;
 
+import ll.kor.java.ssg.dto.Article;
 import ll.kor.java.ssg.dto.Member;
 import ll.kor.java.ssg.util.Util;
 
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MemberController extends Controller {
-
     private List<Member> members;
     private Scanner sc;
     private String cmd;
@@ -47,30 +47,66 @@ public class MemberController extends Controller {
         members.add(new Member(3, Util.getNowDateStr(), "user2", "user2", "홍길순"));
     }
 
-    private void doJoin() {
+    private boolean isLogined() {
+        return loginedMember != null;
+    }
 
-        if (loginedMember != null) {
-            IO.println("로그아웃 후 이용해주세요.");
+    private void doLogout() {
+        if ( !isLogined() ) {
+            IO.println("로그인 상태가 아닙니다.");
             return;
         }
 
+        loginedMember = null;
+        IO.println("로그아웃 되었습니다.");
+    }
+
+    private void doLogin() {
+        if ( isLogined() ) {
+            IO.println("이미 로그인 되어 있습니다.");
+            return;
+        }
+
+        IO.print("로그인 아이디 : ");
+        String loginId = sc.nextLine();
+        IO.print("로그인 비번 : ");
+        String loginPw = sc.nextLine();
+
+        Member member = getMemberByLoginId(loginId);
+
+        if ( member == null ) {
+            IO.println("해당 회원은 존재하지 않습니다.");
+            return;
+        }
+
+        if ( !member.loginPw.equals(loginPw) ){
+            IO.println("비밀번호를 확인해주세요");
+            return;
+        }
+
+        loginedMember = member;
+        IO.println(String.format("로그인 성공! %s님 환영합니다^^", member.name));
+    }
+
+    private void doJoin() {
         int id = members.size() + 1;
         String regDate = Util.getNowDateStr();
 
-        String loginId;
+        String loginId = null;
 
         while (true) {
             IO.print("로그인 아이디 : ");
             loginId = sc.nextLine();
 
             if (!isJoinableLoginId(loginId)) {
-                IO.println(loginId + "(은)는 이미 사용중인 아이디 입니다.");
+                IO.println(String.format("%s(은)는 이미 사용중인 아이디 입니다.", loginId));
                 continue;
             }
+
             break;
         }
 
-        String loginPw;
+        String loginPw = null;
 
         while (true) {
             IO.print("로그인 비번 : ");
@@ -78,87 +114,56 @@ public class MemberController extends Controller {
             IO.print("로그인 비번확인 : ");
             String loginPwConfirm = sc.nextLine();
 
+            // if ( loginPw.equals(loginPwConfirm) == false ) {
             if (!loginPw.equals(loginPwConfirm)) {
                 IO.println("비밀번호를 다시 입력해주세요.");
                 continue;
             }
+
             break;
         }
 
-        IO.print("이름 : ");
+        IO.print("로그인 비번 : ");
         String name = sc.nextLine();
 
         Member member = new Member(id, regDate, loginId, loginPw, name);
         members.add(member);
 
-        IO.println(name + "님 회원가입이 완료되었습니다.");
-    }
-
-    private void doLogin() {
-
-        if (loginedMember != null) {
-            IO.println("이미 로그인 상태입니다.");
-            return;
-        }
-
-        IO.print("로그인 아이디 : ");
-        String loginId = sc.nextLine();
-
-        IO.print("로그인 비번 : ");
-        String loginPw = sc.nextLine();
-
-        Member member = getMemberByLoginId(loginId);
-
-        if (member == null) {
-            IO.println("해당 회원은 존재하지 않습니다.");
-            return;
-        }
-
-        if (!member.loginPw.equals(loginPw)) {
-            IO.println("비밀번호를 확인해주세요.");
-            return;
-        }
-
-        loginedMember = member;
-        IO.println(member.name + "님 환영합니다^^");
-    }
-
-    private void doLogout() {
-
-        if (loginedMember == null) {
-            IO.println("현재 로그인 상태가 아닙니다.");
-            return;
-        }
-
-        IO.println(loginedMember.name + "님 로그아웃 되었습니다.");
-        loginedMember = null;
+        IO.println(String.format("%s님 회원가입이 완료되었습니다.", name));
     }
 
     private int getMemberIndexByLoginId(String loginId) {
-        for (int i = 0; i < members.size(); i++) {
-            if (members.get(i).loginId.equals(loginId)) {
+        int i = 0;
+
+        for (Member member : members) {
+            if (member.loginId.equals(loginId)) {
                 return i;
             }
+            i++;
         }
+
         return -1;
     }
 
     private Member getMemberByLoginId(String loginId) {
         int index = getMemberIndexByLoginId(loginId);
-        if (index == -1) return null;
+
+        if ( index == -1 ) {
+            return null;
+        }
+
         return members.get(index);
     }
 
     private boolean isJoinableLoginId(String loginId) {
-        return getMemberIndexByLoginId(loginId) == -1;
+        int index = getMemberIndexByLoginId(loginId);
+
+        if (index == -1) {
+            return true;
+        }
+
+        return false;
     }
 
-    // 로그인 상태 확인용
-    public boolean isLogined() {
-        return loginedMember != null;
-    }
 
-    public Member getLoginedMember() {
-        return loginedMember;
-    }
 }
