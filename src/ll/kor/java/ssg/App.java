@@ -13,6 +13,8 @@ public class App {
         Scanner sc = new Scanner(System.in);
 
         MemberController memberController = new MemberController(sc);
+        memberController.makeTestData();
+
         ArticleController articleController = new ArticleController(sc);
         articleController.makeTestData();
 
