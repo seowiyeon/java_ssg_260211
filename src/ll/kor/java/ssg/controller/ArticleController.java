@@ -10,8 +10,8 @@ import java.util.Scanner;
 
 public class ArticleController extends Controller {
     private List<Article> articles;
-    Scanner sc;
-    String cmd;
+    private Scanner sc;
+    private String cmd;
 
     public ArticleController(Scanner sc) {
         articles = new ArrayList<>();
@@ -51,7 +51,7 @@ public class ArticleController extends Controller {
         articles.add(new Article(3, Util.getNowDateStr(), "제목 3", "내용 3", 33));
     }
 
-    public void doWrite() {
+    private void doWrite() {
         int id = articles.size() + 1;
         String regDate = Util.getNowDateStr();
         IO.print("제목 : ");
@@ -65,7 +65,7 @@ public class ArticleController extends Controller {
         IO.println(String.format("%d번 글이 생성되었습니다.", id));
     }
 
-    public void showList() {
+    private void showList() {
         if (articles.isEmpty()) {
             IO.println("게시물이 없습니다.");
             return;
@@ -97,7 +97,7 @@ public class ArticleController extends Controller {
         }
     }
 
-    public void showDetail() {
+    private void showDetail() {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
@@ -117,7 +117,7 @@ public class ArticleController extends Controller {
         IO.println(String.format("조회 : %d", foundArticle.hit));
     }
 
-    public void doDelete() {
+    private void doDelete() {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
@@ -133,7 +133,7 @@ public class ArticleController extends Controller {
         IO.println(String.format("%d번 게시물이 삭제되었습니다.", id));
     }
 
-    public void doModify() {
+    private void doModify() {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
