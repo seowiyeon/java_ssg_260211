@@ -7,13 +7,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class MemberController {
+public class MemberController extends Controller {
     private List<Member> members;
     Scanner sc;
+    String cmd;
 
     public MemberController(Scanner sc) {
         members = new ArrayList<>();
         this.sc = sc;
+    }
+
+    public void doAction(String cmd, String actionMethodName) {
+        this.cmd = cmd;
+
+        switch (actionMethodName) {
+            case "join":
+                doJoin();
+                break;
+            default:
+                IO.println("존재하지 않는 명령어 입니다.");
+                break;
+        }
     }
 
     public void doJoin() {

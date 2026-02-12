@@ -8,13 +8,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ArticleController {
+public class ArticleController extends Controller {
     private List<Article> articles;
     Scanner sc;
+    String cmd;
 
     public ArticleController(Scanner sc) {
         articles = new ArrayList<>();
         this.sc = sc;
+    }
+
+    public void doAction(String cmd, String actionMethodName) {
+        this.cmd = cmd;
+
+        switch (actionMethodName) {
+            case "list":
+                showList();
+                break;
+            case "detail":
+                showDetail();
+                break;
+            case "write":
+                doWrite();
+                break;
+            case "modify":
+                doModify();
+                break;
+            case "delete":
+                doDelete();
+                break;
+            default:
+                IO.println("존재하지 않는 명령어 입니다.");
+                break;
+        }
+    }
+
+    public void makeTestData() {
+        IO.println("테스트를 위한 데이터를 생성합니다.");
+
+        articles.add(new Article(1, Util.getNowDateStr(), "제목 1", "내용 1", 10));
+        articles.add(new Article(2, Util.getNowDateStr(), "제목 2", "내용 2", 43));
+        articles.add(new Article(3, Util.getNowDateStr(), "제목 3", "내용 3", 33));
     }
 
     public void doWrite() {
@@ -31,7 +65,7 @@ public class ArticleController {
         IO.println(String.format("%d번 글이 생성되었습니다.", id));
     }
 
-    public void showList(String cmd) {
+    public void showList() {
         if (articles.isEmpty()) {
             IO.println("게시물이 없습니다.");
             return;
@@ -63,7 +97,7 @@ public class ArticleController {
         }
     }
 
-    public void showDetail(String cmd) {
+    public void showDetail() {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
@@ -83,7 +117,7 @@ public class ArticleController {
         IO.println(String.format("조회 : %d", foundArticle.hit));
     }
 
-    public void doDelete(String cmd) {
+    public void doDelete() {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
@@ -99,7 +133,7 @@ public class ArticleController {
         IO.println(String.format("%d번 게시물이 삭제되었습니다.", id));
     }
 
-    public void doModify(String cmd) {
+    public void doModify() {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
