@@ -47,21 +47,11 @@ public class MemberController extends Controller {
     }
 
     private void doLogout() {
-        if ( !isLogined() ) {
-            IO.println("로그인 상태가 아닙니다.");
-            return;
-        }
-
         loginedMember = null;
         IO.println("로그아웃 되었습니다.");
     }
 
     private void doLogin() {
-        if ( isLogined() ) {
-            IO.println("이미 로그인 되어 있습니다.");
-            return;
-        }
-
         IO.print("로그인 아이디 : ");
         String loginId = sc.nextLine();
         IO.print("로그인 비번 : ");
