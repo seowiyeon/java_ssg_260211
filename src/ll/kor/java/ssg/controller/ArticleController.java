@@ -28,6 +28,10 @@ public class ArticleController extends Controller {
                 showDetail();
                 break;
             case "write":
+                if ( !isLogined() ) {
+                    IO.println("로그인 후 이용해주세요");
+                    break;
+                }
                 doWrite();
                 break;
             case "modify":
@@ -45,9 +49,9 @@ public class ArticleController extends Controller {
     public void makeTestData() {
         IO.println("테스트를 위한 게시물 데이터를 생성합니다.");
 
-        articles.add(new Article(1, Util.getNowDateStr(), "제목 1", "내용 1", 10));
-        articles.add(new Article(2, Util.getNowDateStr(), "제목 2", "내용 2", 43));
-        articles.add(new Article(3, Util.getNowDateStr(), "제목 3", "내용 3", 33));
+        articles.add(new Article(1, Util.getNowDateStr(), 1, "제목 1", "내용 1", 10));
+        articles.add(new Article(2, Util.getNowDateStr(), 2, "제목 2", "내용 2", 43));
+        articles.add(new Article(3, Util.getNowDateStr(), 3, "제목 3", "내용 3", 33));
     }
 
     private void doWrite() {
@@ -58,7 +62,7 @@ public class ArticleController extends Controller {
         IO.print("내용 : ");
         String content = sc.nextLine();
 
-        Article article = new Article(id, regDate, subject, content);
+        Article article = new Article(id, regDate, loginedMember.id, subject, content);
         articles.add(article);
 
         IO.println(String.format("%d번 글이 생성되었습니다.", id));
@@ -88,11 +92,11 @@ public class ArticleController extends Controller {
             }
         }
 
-        IO.println("번호 | 조회 | 제목");
+        IO.println("번호 | 작성자 | 조회 | 제목");
         for (int i = forListArticles.size() - 1; i >= 0; i--) {
             Article article = forListArticles.get(i);
 
-            IO.println(String.format("%d   | %d   | %s", article.id, article.hit, article.subject));
+            IO.println(String.format("%4d | %4d | %4d | %s", article.id, article.memberId, article.hit, article.subject));
         }
     }
 
@@ -110,6 +114,7 @@ public class ArticleController extends Controller {
         foundArticle.increaseHit();
 
         IO.println(String.format("번호 : %d", foundArticle.id));
+        IO.println(String.format("작성자 : %d", foundArticle.memberId));
         IO.println(String.format("날짜 : %s", foundArticle.regDate));
         IO.println(String.format("제목 : %s", foundArticle.subject));
         IO.println(String.format("내용 : %s", foundArticle.content));

@@ -12,7 +12,6 @@ public class MemberController extends Controller {
     private List<Member> members;
     private Scanner sc;
     private String cmd;
-    private Member loginedMember;
 
     public MemberController(Scanner sc) {
         members = new ArrayList<>();
@@ -45,10 +44,6 @@ public class MemberController extends Controller {
         members.add(new Member(1, Util.getNowDateStr(), "admin", "admin", "관리자"));
         members.add(new Member(2, Util.getNowDateStr(), "user1", "user1", "홍길동"));
         members.add(new Member(3, Util.getNowDateStr(), "user2", "user2", "홍길순"));
-    }
-
-    private boolean isLogined() {
-        return loginedMember != null;
     }
 
     private void doLogout() {
