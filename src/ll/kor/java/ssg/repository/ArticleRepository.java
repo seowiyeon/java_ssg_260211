@@ -6,44 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleRepository extends Repository {
+
     private List<Article> articles;
 
     public ArticleRepository() {
         articles = new ArrayList<>();
     }
 
-    public void add(Article article) {
+    public Article add(String subject, String content, int memberId) {
+        int id = ++lastId;
+        Article article = new Article(id, subject, content, memberId);
         articles.add(article);
-        lastId++;
+        return article;
     }
 
-    public List<Article> getArticles() {
+    public List<Article> getAll() {
         return articles;
-    }
-
-    public Article getArticleById(int id) {
-        int index = getArticleIndexById(id);
-
-        if (index != -1) {
-            return articles.get(index);
-        }
-
-        return null;
-    }
-
-    public int getArticleIndexById(int id) {
-        int i = 0;
-        for (Article article : articles) {
-            if (article.id == id) {
-                return i;
-            }
-            i++;
-        }
-
-        return -1;
-    }
-
-    public void remove(Article foundArticle) {
-        articles.remove(foundArticle);
     }
 }

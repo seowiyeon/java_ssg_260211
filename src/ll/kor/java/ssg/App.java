@@ -20,20 +20,19 @@ public class App {
 
         while (true) {
             IO.print("명령어) ");
-            String cmd = sc.nextLine();
-            cmd = cmd.trim(); // 앞뒤에 쓸데없는 공백을 제거
+            String cmd = sc.nextLine().trim();
 
             if (cmd.isEmpty()) continue;
             if (cmd.equals("exit")) break;
 
-            String[] cmdBits = cmd.split(" "); // article detail 1
+            String[] cmdBits = cmd.split(" ");
             if (cmdBits.length == 1) {
                 IO.println("존재하지 않는 명령어 입니다.");
                 continue;
             }
 
-            String controllerName = cmdBits[0]; // article / member
-            String actionMethodName = cmdBits[1]; // detail / join
+            String controllerName = cmdBits[0];
+            String actionMethodName = cmdBits[1];
 
             Controller controller = null;
 
@@ -47,25 +46,25 @@ public class App {
             }
 
             String actionName = controllerName + "/" + actionMethodName;
-            // article/list
-            // member/login
 
-            switch ( actionName ) {
+            // 🔥 로그인 필요한 명령어
+            switch (actionName) {
                 case "article/write":
                 case "article/delete":
                 case "article/modify":
                 case "member/logout":
-                    if ( !Controller.isLogined() ) {
+                    if (MemberController.getLoginedMember() == null) {
                         IO.println("로그인 후 이용해주세요.");
                         continue;
                     }
                     break;
             }
 
-            switch ( actionName ) {
+            // 🔥 로그아웃 상태에서만 가능한 명령어
+            switch (actionName) {
                 case "member/join":
                 case "member/login":
-                    if ( Controller.isLogined() ) {
+                    if (MemberController.getLoginedMember() != null) {
                         IO.println("로그아웃 후 이용해주세요.");
                         continue;
                     }

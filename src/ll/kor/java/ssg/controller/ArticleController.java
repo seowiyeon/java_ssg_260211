@@ -2,171 +2,59 @@ package ll.kor.java.ssg.controller;
 
 import ll.kor.java.ssg.container.Container;
 import ll.kor.java.ssg.dto.Article;
-import ll.kor.java.ssg.dto.Member;
-import ll.kor.java.ssg.repository.ArticleRepository;
 import ll.kor.java.ssg.service.ArticleService;
-import ll.kor.java.ssg.util.Util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class ArticleController extends Controller {
-    private Scanner sc;
-    private String cmd;
-    private ArticleRepository articleRepository;
+
     private ArticleService articleService;
+    private Scanner sc;
 
     public ArticleController(Scanner sc) {
         this.sc = sc;
-        articleRepository = Container.articleRepository;
         articleService = Container.articleService;
     }
 
-    public void doAction(String cmd, String actionMethodName) {
-        this.cmd = cmd;
-
-        switch (actionMethodName) {
-            case "list":
-                showList();
-                break;
-            case "detail":
-                showDetail();
-                break;
-            case "write":
-                doWrite();
-                break;
-            case "modify":
-                doModify();
-                break;
-            case "delete":
-                doDelete();
-                break;
-            default:
-                IO.println("존재하지 않는 명령어 입니다.");
-                break;
-        }
-    }
-
+    @Override
     public void makeTestData() {
-        IO.println("테스트를 위한 게시물 데이터를 생성합니다.");
-
-        articleRepository.add(new Article(1, Util.getNowDateStr(), 1, "제목 1", "내용 1", 10));
-        articleRepository.add(new Article(2, Util.getNowDateStr(), 2, "제목 2", "내용 2", 43));
-        articleRepository.add(new Article(3, Util.getNowDateStr(), 3, "제목 3", "내용 3", 33));
+        // 🔥 테스트 게시글 2개 생성
+        articleService.write("테스트 제목1", "테스트 내용1", 1);
+        articleService.write("테스트 제목2", "테스트 내용2", 1);
     }
 
-    private void doWrite() {
-        int id = articleRepository.getNewId();
-        String regDate = Util.getNowDateStr();
-        IO.print("제목 : ");
+    @Override
+    public void doAction(String cmd, String actionMethodName) {
+        switch (actionMethodName) {
+            case "write":
+                write();
+                break;
+            case "list":
+                list();
+                break;
+        }
+    }
+
+    private void write() {
+        System.out.print("제목: ");
         String subject = sc.nextLine();
-        IO.print("내용 : ");
+
+        System.out.print("내용: ");
         String content = sc.nextLine();
 
-        Article article = new Article(id, regDate, loginedMember.id, subject, content);
-        articleRepository.add(article);
+        int memberId = MemberController.getLoginedMember().id;
 
-        IO.println(String.format("%d번 글이 생성되었습니다.", id));
+        articleService.write(subject, content, memberId);
+        System.out.println("게시글 작성 완료");
     }
 
-    private void showList() {
-        String searchKeyword = cmd.substring("article list".length()).trim();
+    private void list() {
+        List<Article> articles = articleService.getArticles();
 
-        List<Article> forListArticles = articleService.getForPrintArticles(searchKeyword);
-
-        if (forListArticles.isEmpty()) {
-            IO.println("검색 결과가 존재하지 않습니다.");
-            return;
-        }
-
-        IO.println("번호 |     작성자 | 조회 | 제목");
-        for (int i = forListArticles.size() - 1; i >= 0; i--) {
-            Article article = forListArticles.get(i);
-
-            List<Member> members = Container.memberRepository.members;
-            String writerName = "홍길동";
-
-            for ( Member member : members ) {
-                if ( article.memberId == member.id ) {
-                    writerName = member.name;
-                    break;
-                }
-            }
-
-            IO.println(String.format("%4d | %6s | %4d | %s", article.id, writerName, article.hit, article.subject));
+        System.out.println("번호 / 제목");
+        for (Article article : articles) {
+            System.out.println(article.id + " / " + article.subject);
         }
     }
-
-    private void showDetail() {
-        String[] cmdBits = cmd.split(" ");
-        int id = Integer.parseInt(cmdBits[2]);
-
-        Article foundArticle = articleService.getArticleById(id);
-
-        if (foundArticle == null) {
-            IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
-            return;
-        }
-
-        foundArticle.increaseHit();
-
-        IO.println(String.format("번호 : %d", foundArticle.id));
-        IO.println(String.format("작성자 : %d", foundArticle.memberId));
-        IO.println(String.format("날짜 : %s", foundArticle.regDate));
-        IO.println(String.format("제목 : %s", foundArticle.subject));
-        IO.println(String.format("내용 : %s", foundArticle.content));
-        IO.println(String.format("조회 : %d", foundArticle.hit));
-    }
-
-    private void doDelete() {
-        String[] cmdBits = cmd.split(" ");
-        int id = Integer.parseInt(cmdBits[2]);
-
-        Article foundArticle = articleService.getArticleById(id);
-
-        if (foundArticle == null) {
-            IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
-            return;
-        }
-
-        if ( foundArticle.memberId != loginedMember.id ) {
-            IO.println("권한이 없습니다.");
-            return;
-        }
-
-        articleService.remove(foundArticle);
-
-        IO.println(String.format("%d번 게시물이 삭제되었습니다.", id));
-    }
-
-    private void doModify() {
-        String[] cmdBits = cmd.split(" ");
-        int id = Integer.parseInt(cmdBits[2]);
-
-        Article foundArticle = articleService.getArticleById(id);
-
-        if (foundArticle == null) {
-            IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
-            return;
-        }
-
-        if ( foundArticle.memberId != loginedMember.id ) {
-            IO.println("권한이 없습니다.");
-            return;
-        }
-
-        IO.print("제목 : ");
-        String subject = sc.nextLine();
-        IO.print("내용 : ");
-        String content = sc.nextLine();
-
-        foundArticle.regDate = Util.getNowDateStr();
-        foundArticle.subject = subject;
-        foundArticle.content = content;
-
-        IO.println(String.format("%d번 게시물이 수정되었습니다.", id));
-    }
-
-
 }
