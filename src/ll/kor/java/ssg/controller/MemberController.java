@@ -1,5 +1,6 @@
 package ll.kor.java.ssg.controller;
 
+import ll.kor.java.ssg.container.Container;
 import ll.kor.java.ssg.dto.Article;
 import ll.kor.java.ssg.dto.Member;
 import ll.kor.java.ssg.util.Util;
@@ -14,9 +15,9 @@ public class MemberController extends Controller {
     private String cmd;
 
     public MemberController(Scanner sc) {
-        members = new ArrayList<>();
         this.sc = sc;
         loginedMember = null;
+        members = Container.memberRepository.members;
     }
 
     public void doAction(String cmd, String actionMethodName) {

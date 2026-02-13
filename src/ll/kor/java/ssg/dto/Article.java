@@ -4,7 +4,7 @@ public class Article extends Dto {
     public String subject;
     public String content;
     public int hit;
-    public int memberId; // 8
+    public int memberId; // 홍길동
 
     public Article(int id, String regDate, int memberId, String subject, String content) {
         this(id, regDate, memberId, subject, content, 0);

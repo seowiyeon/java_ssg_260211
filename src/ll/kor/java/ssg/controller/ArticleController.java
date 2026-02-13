@@ -1,6 +1,8 @@
 package ll.kor.java.ssg.controller;
 
+import ll.kor.java.ssg.container.Container;
 import ll.kor.java.ssg.dto.Article;
+import ll.kor.java.ssg.dto.Member;
 import ll.kor.java.ssg.util.Util;
 
 import java.util.ArrayList;
@@ -13,8 +15,8 @@ public class ArticleController extends Controller {
     private String cmd;
 
     public ArticleController(Scanner sc) {
-        articles = new ArrayList<>();
         this.sc = sc;
+        articles = Container.articleRepository.articles;
     }
 
     public void doAction(String cmd, String actionMethodName) {
@@ -88,11 +90,21 @@ public class ArticleController extends Controller {
             }
         }
 
-        IO.println("번호 | 작성자 | 조회 | 제목");
+        IO.println("번호 |     작성자 | 조회 | 제목");
         for (int i = forListArticles.size() - 1; i >= 0; i--) {
             Article article = forListArticles.get(i);
 
-            IO.println(String.format("%4d | %4d | %4d | %s", article.id, article.memberId, article.hit, article.subject));
+            List<Member> members = Container.memberRepository.members;
+            String writerName = "홍길동";
+
+            for ( Member member : members ) {
+                if ( article.memberId == member.id ) {
+                    writerName = member.name;
+                    break;
+                }
+            }
+
+            IO.println(String.format("%4d | %6s | %4d | %s", article.id, writerName, article.hit, article.subject));
         }
     }
 
