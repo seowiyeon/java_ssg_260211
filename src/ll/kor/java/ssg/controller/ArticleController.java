@@ -125,14 +125,19 @@ public class ArticleController extends Controller {
         String[] cmdBits = cmd.split(" ");
         int id = Integer.parseInt(cmdBits[2]);
 
-        int foundIndex = getArticleIndexById(id);
+        Article foundArticle = getArticleById(id);
 
-        if (foundIndex == -1) {
+        if (foundArticle == null) {
             IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
             return;
         }
 
-        articles.remove(foundIndex);
+        if ( foundArticle.memberId != loginedMember.id ) {
+            IO.println("권한이 없습니다.");
+            return;
+        }
+
+        articles.remove(foundArticle);
 
         IO.println(String.format("%d번 게시물이 삭제되었습니다.", id));
     }
@@ -145,6 +150,11 @@ public class ArticleController extends Controller {
 
         if (foundArticle == null) {
             IO.println(String.format("%d번 게시물은 존재하지 않습니다.", id));
+            return;
+        }
+
+        if ( foundArticle.memberId != loginedMember.id ) {
+            IO.println("권한이 없습니다.");
             return;
         }
 
