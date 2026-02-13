@@ -3,6 +3,7 @@ package ll.kor.java.ssg.controller;
 import ll.kor.java.ssg.container.Container;
 import ll.kor.java.ssg.dto.Article;
 import ll.kor.java.ssg.dto.Member;
+import ll.kor.java.ssg.repository.MemberRepository;
 import ll.kor.java.ssg.util.Util;
 
 import java.util.ArrayList;
@@ -13,10 +14,12 @@ public class MemberController extends Controller {
     private List<Member> members;
     private Scanner sc;
     private String cmd;
+    private MemberRepository memberRepository;
 
     public MemberController(Scanner sc) {
         this.sc = sc;
         loginedMember = null;
+        memberRepository = Container.memberRepository;
         members = Container.memberRepository.members;
     }
 
@@ -42,9 +45,9 @@ public class MemberController extends Controller {
     public void makeTestData() {
         IO.println("테스트를 위한 회원 데이터를 생성합니다.");
 
-        members.add(new Member(1, Util.getNowDateStr(), "admin", "admin", "관리자"));
-        members.add(new Member(2, Util.getNowDateStr(), "user1", "user1", "홍길동"));
-        members.add(new Member(3, Util.getNowDateStr(), "user2", "user2", "홍길순"));
+        memberRepository.add(new Member(1, Util.getNowDateStr(), "admin", "admin", "관리자"));
+        memberRepository.add(new Member(2, Util.getNowDateStr(), "user1", "user1", "홍길동"));
+        memberRepository.add(new Member(3, Util.getNowDateStr(), "user2", "user2", "홍길순"));
     }
 
     private void doLogout() {
@@ -75,7 +78,7 @@ public class MemberController extends Controller {
     }
 
     private void doJoin() {
-        int id = members.size() + 1;
+        int id = memberRepository.getNewId();
         String regDate = Util.getNowDateStr();
 
         String loginId = null;
